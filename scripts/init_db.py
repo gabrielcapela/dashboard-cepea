@@ -7,21 +7,11 @@ cursor = conn.cursor()
 # Table creation
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS prices (
-    -- Date of the price, format will be stored as TEXT (in dd/mm/yyyy)
     date TEXT PRIMARY KEY,
-
-    -- Price of fattened cattle
     fattened_cattle REAL,
-
-    -- Price of rice
     rice REAL,
-
-    -- Price of coffee
-    coffee REAL
-               
-    -- Price of dolar
-    dolar REAL
-
+    coffee REAL,
+    dollar REAL
 );
 """)
 

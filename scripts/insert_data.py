@@ -12,10 +12,10 @@ cursor = conn.cursor()
 
 # Map Excel filenames to database column names
 file_column_map = {
-    "fattened_cattle.xls": "fattened_cattle",
-    "rice.xls": "rice",
-    "coffee.xls": "coffee",
-    "dolar.xls": "dollar"
+    "fattened_cattle.xlsx": "fattened_cattle",
+    "rice.xlsx": "rice",
+    "coffee.xlsx": "coffee",
+    "dollar.xlsx": "dollar"
 }
 
 # Loop through each Excel file and update the corresponding column
@@ -27,15 +27,16 @@ for filename, column in file_column_map.items():
 
     # Rename the first two columns to standard names
     df = df.iloc[:, :2]  # select only the first two columns
-    df.columns = ['data', 'preco']  # rename columns for consistency
+    df.columns = ['date', 'price']  # rename columns for consistency
 
     # Convert 'data' column to string format dd/mm/yyyy
-    df['data'] = pd.to_datetime(df['data']).dt.strftime('%d/%m/%Y')
+    df['date'] = pd.to_datetime(df['date'], dayfirst=True).dt.strftime('%Y-%m-%d')
+
 
     # Iterate over rows and update or insert into the database
     for _, row in df.iterrows():
-        date = row['data']
-        price = row['preco']
+        date = row['date']
+        price = row['price']
 
         # Check if a row with this date already exists
         cursor.execute("SELECT * FROM prices WHERE date = ?", (date,))
@@ -47,10 +48,6 @@ for filename, column in file_column_map.items():
         else:
             # If not exists, insert a new row with only this column filled
             cursor.execute(f"INSERT INTO prices (date, {column}) VALUES (?, ?)", (date, price))
-
-
-
-
 
 
 # Commit changes and close connection
