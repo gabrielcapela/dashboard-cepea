@@ -30,7 +30,7 @@ for filename, column in file_column_map.items():
     df.columns = ['date', 'price']  # rename columns for consistency
 
     # Convert 'data' column to string format dd/mm/yyyy
-    df['date'] = pd.to_datetime(df['date'], dayfirst=True).dt.strftime('%Y-%m-%d')
+    df['date'] = pd.to_datetime(df['date.exx'], dayfirst=True).dt.strftime('%Y-%m-%d')
 
 
     # Iterate over rows and update or insert into the database
