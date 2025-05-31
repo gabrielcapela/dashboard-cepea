@@ -3,6 +3,48 @@ import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 from scripts.utils import get_clean_data
+import os
+
+
+# --- PAGE SETUP ---
+st.set_page_config(page_title="CEPEA Price Dashboard", layout="wide")
+
+
+
+# --- STYLE SETTING ---
+st.markdown("""
+    <style>
+        /* Leaves the st.radio buttons stacked vertically and taking up the entire width */
+        .stRadio > div {
+            flex-direction: column;
+        }
+
+        .stRadio > div > label {
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+            width: 100%;
+            transition: all 0.2s;
+            background-color: #f5f5f5;
+            font-weight: 500;
+        }
+
+        .stRadio > div > label:hover {
+            background-color: #e0e0e0;
+        }
+
+        .stRadio > div > label[data-selected="true"] {
+            background-color: #A0522D;
+            color: white;
+            border-color: #A0522D;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
+
 
 # ---HEADER---
 # Custom fixed header with sidebar-aware layout
@@ -71,11 +113,11 @@ conn.close()
 
 
 # Sidebar navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["📈 Price Chart", "📋 Raw Data", "ℹ️ About"])
+st.sidebar.title("NAVIGATION")
+page = st.sidebar.radio("Go to", ["📈 Visualization", "📋 Data Source & Scraping", "💰 Price Forecast", "ℹ️ About"])
 
 # Logic for each page
-if page == "📈 Price Chart":
+if page == "📈 Visualization":
 
     st.header("Price Chart")
     st.write("This section will show the line chart of selected commodity.")
@@ -107,7 +149,7 @@ if page == "📈 Price Chart":
 
 
 
-elif page == "📋 Raw Data":
+elif page == "📋 Data Source & Scraping":
     st.header("Raw Data")
     # 👉 Aqui vai o st.dataframe com os dados
     st.write("This section will display the raw data table.")
@@ -119,6 +161,16 @@ elif page == "📋 Raw Data":
     data_to_plot = get_clean_data(df)[1]
     st.dataframe(data_to_plot)  
 
+
+elif page == "💰 Price Forecast":
+    st.header("Predictions of the prices")
+    st.markdown("""
+    This dashboard was built using **Streamlit** and displays historical price data from CEPEA.
+;;;;;
+                
+    """)
+
+
 elif page == "ℹ️ About":
     st.header("About this App")
     st.markdown("""
@@ -127,6 +179,18 @@ elif page == "ℹ️ About":
     - Data source: CEPEA database
     - Developer: Gabriel Capela
     """)
+
+
+    
+
+    st.write("Test loading image")
+    image_path = os.path.join("images", "coffee.jpg")
+    st.write("Image path:", image_path)
+
+    if os.path.exists(image_path):
+        st.image(image_path, caption="Test Coffee Image", width=150)
+    else:
+        st.error("Image not found!")
 
 
 
