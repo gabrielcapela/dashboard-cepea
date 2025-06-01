@@ -93,8 +93,14 @@ st.markdown("<div style='height: 45px;'></div>", unsafe_allow_html=True)
 
 
 
-# Connect to the SQLite database
-conn = sqlite3.connect("data/cepea.db")
+# Get the path to the current directory (where app.py is)
+base_dir = os.path.dirname(__file__)
+
+# Build the full path to the database
+db_path = os.path.join(base_dir, "data", "cepea.db")
+
+# Connect to the database
+conn = sqlite3.connect(db_path)
 
 # Load all records from the 'prices' table
 df = pd.read_sql("SELECT * FROM prices ORDER BY date", conn)
@@ -124,6 +130,8 @@ if page == "📈 Visualization":
 
     # Get cleaned data and selected product
     product, data_to_plot = get_clean_data(df)
+
+
 
     # --- DATE RANGE SELECTOR WITH STATE ---
     min_date = data_to_plot['date'].min()
@@ -187,7 +195,9 @@ if page == "📈 Visualization":
 
 
 
-    # Create the line plot
+
+
+    # CREATE THE LINE CHART
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(filtered_data['date'], filtered_data[product], marker='o')
 

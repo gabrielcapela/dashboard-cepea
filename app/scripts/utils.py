@@ -57,6 +57,6 @@ def get_clean_data(df):
     if time_res == "Monthly":
         df_clean = df_clean.set_index('date').resample('ME').mean().reset_index()
     elif time_res == "Yearly":
-        df_clean = df_clean.set_index('date').resample('Y').mean().reset_index()
+        df_clean = df_clean.set_index('date').resample('YE').mean().reset_index()
 
     return selected_product, df_clean
