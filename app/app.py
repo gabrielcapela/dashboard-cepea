@@ -125,9 +125,72 @@ if page == "📈 Visualization":
     # Get cleaned data and selected product
     product, data_to_plot = get_clean_data(df)
 
+    # --- DATE RANGE SELECTOR WITH STATE ---
+    min_date = data_to_plot['date'].min()
+    max_date = data_to_plot['date'].max()
+
+    # Initialize session_state only once
+    if "start_date" not in st.session_state:
+        st.session_state.start_date = min_date
+    if "end_date" not in st.session_state:
+        st.session_state.end_date = max_date
+
+    # Ensure that saved dates are within the current dataset limits
+    saved_start = st.session_state.start_date
+    saved_end = st.session_state.end_date
+
+    # Corrects out-of-range values
+    if saved_start < min_date:
+        saved_start = min_date
+    if saved_start > max_date:
+        saved_start = max_date
+
+    if saved_end > max_date:
+        saved_end = max_date
+    if saved_end < min_date:
+        saved_end = min_date
+
+    # Show selectors with values ​​already set
+    start_input = st.date_input("Start date:", value=saved_start.date(), min_value=min_date.date(), max_value=max_date.date())
+    end_input = st.date_input("End date:", value=saved_end.date(), min_value=min_date.date(), max_value=max_date.date())
+
+
+    # Convert to datetime
+    start_date = pd.to_datetime(start_input)
+    end_date = pd.to_datetime(end_input)
+
+    # Save updated selections
+    st.session_state.start_date = start_date
+    st.session_state.end_date = end_date
+
+    # Check validity
+    if start_date > end_date:
+        st.warning("Start date must be before end date.")
+        st.stop()
+
+    # Adjust to closest available date
+    while start_date not in data_to_plot['date'].values and start_date > min_date:
+        start_date -= pd.Timedelta(days=1)
+    while end_date not in data_to_plot['date'].values and end_date > min_date:
+        end_date -= pd.Timedelta(days=1)
+
+    # Filter the data
+    mask = (data_to_plot['date'] >= start_date) & (data_to_plot['date'] <= end_date)
+    filtered_data = data_to_plot[mask]
+
+    # Feedback to user
+    if filtered_data.empty:
+        st.error("No data available in the selected date range.")
+        st.stop()
+    elif start_date != st.session_state.start_date or end_date != st.session_state.end_date:
+        st.info(f"Adjusted to nearest available data: {start_date.date()} to {end_date.date()}")
+
+
+
     # Create the line plot
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(data_to_plot['date'], data_to_plot[product], marker='o')
+    ax.plot(filtered_data['date'], filtered_data[product], marker='o')
+
 
     # Customize the plot
     ax.set_title(f'{product.replace("_", " ").title()} Price Over Time', fontsize=20)
@@ -183,14 +246,7 @@ elif page == "ℹ️ About":
 
     
 
-    st.write("Test loading image")
-    image_path = os.path.join("images", "coffee.jpg")
-    st.write("Image path:", image_path)
 
-    if os.path.exists(image_path):
-        st.image(image_path, caption="Test Coffee Image", width=150)
-    else:
-        st.error("Image not found!")
 
 
 

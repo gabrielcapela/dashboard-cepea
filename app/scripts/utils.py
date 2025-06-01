@@ -30,9 +30,11 @@ def get_clean_data(df):
 
     for idx, (key, label) in enumerate(product_labels.items()):
         with cols[idx]:
-            image_path = os.path.join("images", f"{key}.jpg")
+            # Absolute path relative to this file (utils.py inside /app/scripts/)
+            image_path = os.path.join(os.path.dirname(__file__), "..", "images", f"{key}.jpg")
+            image_path = os.path.abspath(image_path)
             if os.path.exists(image_path):
-                st.image(image_path, width=100)
+                st.image(image_path, width=400)
             if st.button(label, key=key):
                 selected_product = key
 
@@ -53,7 +55,7 @@ def get_clean_data(df):
     df_clean = df[['date', selected_product]].dropna()
 
     if time_res == "Monthly":
-        df_clean = df_clean.set_index('date').resample('M').mean().reset_index()
+        df_clean = df_clean.set_index('date').resample('ME').mean().reset_index()
     elif time_res == "Yearly":
         df_clean = df_clean.set_index('date').resample('Y').mean().reset_index()
 
