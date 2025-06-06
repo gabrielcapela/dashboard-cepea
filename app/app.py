@@ -4,44 +4,64 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scripts.utils import get_clean_data
 import os
+import base64
 
 
 # --- PAGE SETUP ---
 st.set_page_config(page_title="CEPEA Price Dashboard", layout="wide")
 
-
+#BDB76B
+#A0522D
+#A0522D
 
 # --- STYLE SETTING ---
 st.markdown("""
     <style>
-        /* Leaves the st.radio buttons stacked vertically and taking up the entire width */
-        .stRadio > div {
-            flex-direction: column;
-        }
-
-        .stRadio > div > label {
-            border: 1px solid #ccc;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            text-align: center;
-            width: 100%;
-            transition: all 0.2s;
-            background-color: #f5f5f5;
-            font-weight: 500;
-        }
-
-        .stRadio > div > label:hover {
-            background-color: #e0e0e0;
-        }
-
-        .stRadio > div > label[data-selected="true"] {
-            background-color: #A0522D;
+        section[data-testid="stSidebar"] {
+            background-color: #BDB76B !important;
             color: white;
-            border-color: #A0522D;
+        }
+
+        .stSidebar .stRadio > div {
+            flex-direction: column;
+            gap: 1.3rem;
+        }
+
+        .stSidebar .stRadio > div > label {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            background-color: white !important;
+            color: black !important;
+            padding: 20px 16px !important;
+            border: 1px solid #ccc !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+            min-width: 300px !important;
+            max-width: 300px !important;
+            text-align: left !important;
+            margin: 0 auto !important;
+        }
+
+        .stSidebar .stRadio > div > label * {
+            font-size: 21px !important;
+            font-weight: bold !important;
+        }
+
+        .stSidebar .stRadio > div > label[data-selected="true"] {
+            background-color: #A0522D !important;
+            color: white !important;
+            border-color: #A0522D !important;
         }
     </style>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
 
 
 
@@ -81,8 +101,16 @@ st.markdown("""
 
 
 
+
+
+
+
+
+
+
+
 # Add vertical space manually after header
-st.markdown("<div style='height: 45px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
 
 
 
@@ -92,7 +120,7 @@ st.markdown("<div style='height: 45px;'></div>", unsafe_allow_html=True)
 
 
 
-
+# --- CONNECTION WITH DATABASE ---
 # Get the path to the current directory (where app.py is)
 base_dir = os.path.dirname(__file__)
 
@@ -120,80 +148,105 @@ conn.close()
 
 # Sidebar navigation
 st.sidebar.title("NAVIGATION")
-page = st.sidebar.radio("Go to", ["📈 Visualization", "📋 Data Source & Scraping", "💰 Price Forecast", "ℹ️ About"])
+page = st.sidebar.radio("Go to", ["📈 Visualization", "📋 Data Source & Scraping", "💰 Price Forecast", "ℹ️ About"], label_visibility="collapsed")
 
 # Logic for each page
 if page == "📈 Visualization":
 
-    st.header("Price Chart")
-    st.write("This section will show the line chart of selected commodity.")
-
-    # Get cleaned data and selected product
-    product, data_to_plot = get_clean_data(df)
 
 
+    
+    st.markdown(
+    '<div style="text-align: center;">'
+    '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
+    'border-radius: 6px; display: inline-block; margin: auto;font-size: 32px; font-weight: bold;">'
+    '📈 Price Line Chart'
+    '</div>'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+
+
+
+   # Get cleaned data and selected product
+    product, data_to_plot, time_res = get_clean_data(df)
+
+    # Unique session keys per resolution and product
+    date_key_prefix = f"{product}_{time_res}".lower()
+    start_key = f"start_date_{date_key_prefix}"
+    end_key = f"end_date_{date_key_prefix}"
 
     # --- DATE RANGE SELECTOR WITH STATE ---
     min_date = data_to_plot['date'].min()
     max_date = data_to_plot['date'].max()
 
-    # Initialize session_state only once
-    if "start_date" not in st.session_state:
-        st.session_state.start_date = min_date
-    if "end_date" not in st.session_state:
-        st.session_state.end_date = max_date
+    # Initialize keys if not present or out of bounds
+    if (
+        start_key not in st.session_state
+        or st.session_state[start_key] < min_date
+        or st.session_state[start_key] > max_date
+    ):
+        st.session_state[start_key] = min_date
 
-    # Ensure that saved dates are within the current dataset limits
-    saved_start = st.session_state.start_date
-    saved_end = st.session_state.end_date
+    if (
+        end_key not in st.session_state
+        or st.session_state[end_key] < min_date
+        or st.session_state[end_key] > max_date
+    ):
+        st.session_state[end_key] = max_date
 
-    # Corrects out-of-range values
-    if saved_start < min_date:
-        saved_start = min_date
-    if saved_start > max_date:
-        saved_start = max_date
+    saved_start = st.session_state[start_key]
+    saved_end = st.session_state[end_key]
 
-    if saved_end > max_date:
-        saved_end = max_date
-    if saved_end < min_date:
-        saved_end = min_date
+    # --- Date Pickers ---
+    col1, col2 = st.columns(2)
+    with col1:
+        start_input = st.date_input(
+            "Start",
+            value=saved_start.date(),
+            min_value=min_date.date(),
+            max_value=max_date.date(),
+            label_visibility="collapsed"
+        )
+    with col2:
+        end_input = st.date_input(
+            "End",
+            value=saved_end.date(),
+            min_value=min_date.date(),
+            max_value=max_date.date(),
+            label_visibility="collapsed"
+        )
 
-    # Show selectors with values ​​already set
-    start_input = st.date_input("Start date:", value=saved_start.date(), min_value=min_date.date(), max_value=max_date.date())
-    end_input = st.date_input("End date:", value=saved_end.date(), min_value=min_date.date(), max_value=max_date.date())
-
-
-    # Convert to datetime
+    # Convert inputs
     start_date = pd.to_datetime(start_input)
     end_date = pd.to_datetime(end_input)
 
-    # Save updated selections
-    st.session_state.start_date = start_date
-    st.session_state.end_date = end_date
+    # Save updates
+    st.session_state[start_key] = start_date
+    st.session_state[end_key] = end_date
 
-    # Check validity
+    # Validate range
     if start_date > end_date:
         st.warning("Start date must be before end date.")
         st.stop()
 
-    # Adjust to closest available date
+    # Adjust to nearest available date if needed
     while start_date not in data_to_plot['date'].values and start_date > min_date:
         start_date -= pd.Timedelta(days=1)
     while end_date not in data_to_plot['date'].values and end_date > min_date:
         end_date -= pd.Timedelta(days=1)
 
-    # Filter the data
+    # Filter data
     mask = (data_to_plot['date'] >= start_date) & (data_to_plot['date'] <= end_date)
     filtered_data = data_to_plot[mask]
 
-    # Feedback to user
+    # User feedback
     if filtered_data.empty:
         st.error("No data available in the selected date range.")
         st.stop()
-    elif start_date != st.session_state.start_date or end_date != st.session_state.end_date:
+    elif start_date != saved_start or end_date != saved_end:
         st.info(f"Adjusted to nearest available data: {start_date.date()} to {end_date.date()}")
-
-
 
 
 
@@ -223,13 +276,18 @@ if page == "📈 Visualization":
 
 
 elif page == "📋 Data Source & Scraping":
-    st.header("Raw Data")
-    # 👉 Aqui vai o st.dataframe com os dados
-    st.write("This section will display the raw data table.")
 
 
-    # Optional: display the filtered data table
-    st.caption("Price history for selected commodity")
+    st.markdown(
+    '<div style="text-align: center;">'
+    '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
+    'border-radius: 6px; display: inline-block; margin: auto;font-size: 32px; font-weight: bold;">'
+    'Raw Data'
+    '</div>'
+    '</div>',
+    unsafe_allow_html=True
+    )
+ 
     # Get cleaned data and selected product
     data_to_plot = get_clean_data(df)[1]
     st.dataframe(data_to_plot)  

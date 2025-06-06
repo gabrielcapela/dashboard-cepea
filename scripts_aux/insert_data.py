@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 # Path to the data folder and database file
-data_dir = Path("data/")
+data_dir = Path("app/data/")
 db_path = data_dir / "cepea.db"
 
 # Connect to the SQLite database
@@ -22,15 +22,15 @@ file_column_map = {
 for filename, column in file_column_map.items():
     file_path = data_dir / filename
 
-    # Read the Excel file, skipping the first 4 rows
-    df = pd.read_excel(file_path, skiprows=4)
+    # Read the Excel file, skipping the first 3 rows
+    df = pd.read_excel(file_path, skiprows=3)
 
     # Rename the first two columns to standard names
     df = df.iloc[:, :2]  # select only the first two columns
     df.columns = ['date', 'price']  # rename columns for consistency
 
     # Convert 'data' column to string format dd/mm/yyyy
-    df['date'] = pd.to_datetime(df['date.exx'], dayfirst=True).dt.strftime('%Y-%m-%d')
+    df['date'] = pd.to_datetime(df['date'], dayfirst=True).dt.strftime('%Y-%m-%d')
 
 
     # Iterate over rows and update or insert into the database

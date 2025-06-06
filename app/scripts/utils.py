@@ -10,6 +10,7 @@ product_labels = {
     'dollar': 'Dollar'
 }
 
+
 def get_clean_data(df):
     """
     Display commodity and time resolution selectors, return cleaned and optionally resampled data.
@@ -20,30 +21,59 @@ def get_clean_data(df):
     Returns:
         product (str): Selected commodity
         data_to_plot (pd.DataFrame): DataFrame with date and selected product, possibly resampled
+        time_res (str): Selected time resolution
     """
 
-    st.markdown("### Select a commodity")
+    # Vertical spacing
+    st.markdown("<div style='height: 1px;'></div>", unsafe_allow_html=True)
 
-    # Create 4 columns (1 for each product)
+    # Commodity selection
+    st.markdown(
+        '<div style="text-align: left;">'
+        '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
+        'border-radius: 6px; display: inline-block; font-size: 20px;">'
+        'Select a commodity:'
+        '</div></div>',
+        unsafe_allow_html=True
+    )
+
+    if "selected_product" not in st.session_state:
+        st.session_state.selected_product = list(product_labels.keys())[0]
+
     cols = st.columns(len(product_labels))
-    selected_product = None
-
     for idx, (key, label) in enumerate(product_labels.items()):
         with cols[idx]:
-            # Absolute path relative to this file (utils.py inside /app/scripts/)
-            image_path = os.path.join(os.path.dirname(__file__), "..", "images", f"{key}.jpg")
-            image_path = os.path.abspath(image_path)
+            image_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "images", f"{key}.jpg"))
             if os.path.exists(image_path):
-                st.image(image_path, width=400)
-            if st.button(label, key=key):
-                selected_product = key
+                st.image(image_path, width=300)
+            if st.button(label, key=f"btn_{key}"):
+                st.session_state.selected_product = key
 
-    # Use default if none selected
-    if selected_product is None:
-        selected_product = list(product_labels.keys())[0]
+    selected_product = st.session_state.selected_product
+
+    # Vertical spacing
+    st.markdown("<div style='height: 1px;'></div>", unsafe_allow_html=True)
 
     # Time resolution selector
-    time_res = st.radio("Select time resolution", ["Daily", "Monthly", "Yearly"], horizontal=True)
+    st.markdown(
+        '<div style="text-align: left;">'
+        '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
+        'border-radius: 6px; display: inline-block; font-size: 20px;">'
+        'Select time resolution:'
+        '</div></div>',
+        unsafe_allow_html=True
+    )
+
+    # Selectbox (define a variável antes de qualquer uso)
+    time_res = st.selectbox("Select time resolution:", ["Daily", "Monthly", "Yearly"], label_visibility="collapsed")
+
+    # Verifica e reseta datas se houve mudança na resolução
+    if "time_res" not in st.session_state:
+        st.session_state.time_res = time_res
+    elif time_res != st.session_state.time_res:
+        st.session_state.start_date = None
+        st.session_state.end_date = None
+        st.session_state.time_res = time_res
 
     # Clean and prepare data
     df['date'] = pd.to_datetime(df['date'])
@@ -55,8 +85,13 @@ def get_clean_data(df):
     df_clean = df[['date', selected_product]].dropna()
 
     if time_res == "Monthly":
-        df_clean = df_clean.set_index('date').resample('ME').mean().reset_index()
+        df_clean = df_clean.set_index('date').resample('M').mean()
+        df_clean.index = df_clean.index.to_period('M').to_timestamp(how='start')
+        df_clean = df_clean.reset_index()
     elif time_res == "Yearly":
-        df_clean = df_clean.set_index('date').resample('YE').mean().reset_index()
+        df_clean = df_clean.set_index('date').resample('Y').mean()
+        df_clean.index = df_clean.index.to_period('Y').to_timestamp(how='start')
+        df_clean = df_clean.reset_index()
 
-    return selected_product, df_clean
+
+    return selected_product, df_clean, time_res

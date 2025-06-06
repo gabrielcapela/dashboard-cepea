@@ -1,7 +1,7 @@
 import sqlite3
 
 # database path
-conn = sqlite3.connect("data/cepea.db")
+conn = sqlite3.connect("app/data/cepea.db")
 cursor = conn.cursor()
 
 # Table creation
