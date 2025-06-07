@@ -27,7 +27,7 @@ def get_clean_data(df):
     # Vertical spacing
     st.markdown("<div style='height: 1px;'></div>", unsafe_allow_html=True)
 
-    # Commodity selection
+    # Commodity selection title
     st.markdown(
         '<div style="text-align: left;">'
         '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
@@ -37,6 +37,7 @@ def get_clean_data(df):
         unsafe_allow_html=True
     )
 
+    ############ Adjusting the product selection ####################
     if "selected_product" not in st.session_state:
         st.session_state.selected_product = list(product_labels.keys())[0]
 
@@ -48,13 +49,14 @@ def get_clean_data(df):
                 st.image(image_path, width=300)
             if st.button(label, key=f"btn_{key}"):
                 st.session_state.selected_product = key
-
+   
     selected_product = st.session_state.selected_product
+    ##############################################
 
     # Vertical spacing
     st.markdown("<div style='height: 1px;'></div>", unsafe_allow_html=True)
 
-    # Time resolution selector
+    # Time resolution selector title
     st.markdown(
         '<div style="text-align: left;">'
         '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
@@ -64,18 +66,21 @@ def get_clean_data(df):
         unsafe_allow_html=True
     )
 
-    # Selectbox (define a variável antes de qualquer uso)
+    ############ Adjusting the time resolution selection ##############
     time_res = st.selectbox("Select time resolution:", ["Daily", "Monthly", "Yearly"], label_visibility="collapsed")
 
-    # Verifica e reseta datas se houve mudança na resolução
+    # Checks and resets dates if there was a change in resolution
     if "time_res" not in st.session_state:
         st.session_state.time_res = time_res
     elif time_res != st.session_state.time_res:
-        st.session_state.start_date = None
-        st.session_state.end_date = None
+        # st.session_state.start_date = None    # resets the start and end dates of the graph
+        # st.session_state.end_date = None      # resets the start and end dates of the graph
         st.session_state.time_res = time_res
+    ##########################################
 
-    # Clean and prepare data
+
+
+    # Clean and prepare data according to selected parameters
     df['date'] = pd.to_datetime(df['date'])
     df[selected_product] = pd.to_numeric(
         df[selected_product].astype(str).str.replace('.', '', regex=False).str.replace(',', '.', regex=False),
@@ -84,14 +89,20 @@ def get_clean_data(df):
 
     df_clean = df[['date', selected_product]].dropna()
 
+    # if time_res == "Monthly":
+    #     df_clean = df_clean.set_index('date').resample('M').mean()
+    #     df_clean.index = df_clean.index.to_period('M').to_timestamp(how='start')
+    #     df_clean = df_clean.reset_index()
+    # elif time_res == "Yearly":
+    #     df_clean = df_clean.set_index('date').resample('Y').mean()
+    #     df_clean.index = df_clean.index.to_period('Y').to_timestamp(how='start')
+    #     df_clean = df_clean.reset_index()
+
     if time_res == "Monthly":
-        df_clean = df_clean.set_index('date').resample('M').mean()
-        df_clean.index = df_clean.index.to_period('M').to_timestamp(how='start')
-        df_clean = df_clean.reset_index()
+        df_clean = df_clean.set_index('date').resample('MS').mean().reset_index()
     elif time_res == "Yearly":
-        df_clean = df_clean.set_index('date').resample('Y').mean()
-        df_clean.index = df_clean.index.to_period('Y').to_timestamp(how='start')
-        df_clean = df_clean.reset_index()
+        df_clean = df_clean.set_index('date').resample('YS').mean().reset_index()
 
 
-    return selected_product, df_clean, time_res
+
+    return  df_clean, selected_product, time_res

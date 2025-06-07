@@ -140,6 +140,11 @@ conn.close()
 
 
 
+# Initialize session variables only once per session
+if "start_date" not in st.session_state:
+    st.session_state.start_date = None
+if "end_date" not in st.session_state:
+    st.session_state.end_date = None
 
 
 
@@ -155,7 +160,7 @@ if page == "📈 Visualization":
 
 
 
-    
+    # Page title adjustment
     st.markdown(
     '<div style="text-align: center;">'
     '<div style="background-color: white; color: black; padding: 0.3rem 1rem; '
@@ -164,67 +169,75 @@ if page == "📈 Visualization":
     '</div>'
     '</div>',
     unsafe_allow_html=True
-)
-
-
+    )
 
 
    # Get cleaned data and selected product
-    product, data_to_plot, time_res = get_clean_data(df)
+    data_to_plot, product,  time_res = get_clean_data(df)
 
-    # Unique session keys per resolution and product
-    date_key_prefix = f"{product}_{time_res}".lower()
-    start_key = f"start_date_{date_key_prefix}"
-    end_key = f"end_date_{date_key_prefix}"
 
-    # --- DATE RANGE SELECTOR WITH STATE ---
+    # # Unique session keys per resolution and product
+    # date_key_prefix = f"{product}_{time_res}".lower()
+    # start_key = f"start_date_{date_key_prefix}"
+    # end_key = f"end_date_{date_key_prefix}"
+
+    # Minimum and maximum dates according to the database
     min_date = data_to_plot['date'].min()
     max_date = data_to_plot['date'].max()
 
-    # Initialize keys if not present or out of bounds
-    if (
-        start_key not in st.session_state
-        or st.session_state[start_key] < min_date
-        or st.session_state[start_key] > max_date
-    ):
-        st.session_state[start_key] = min_date
+    # # Initialize keys if not present or out of bounds
+    # if (
+    #     start_key not in st.session_state
+    #     or st.session_state[start_key] < min_date
+    #     or st.session_state[start_key] > max_date
+    # ):
+    #     st.session_state[start_key] = min_date
 
-    if (
-        end_key not in st.session_state
-        or st.session_state[end_key] < min_date
-        or st.session_state[end_key] > max_date
-    ):
-        st.session_state[end_key] = max_date
+    # if (
+    #     end_key not in st.session_state
+    #     or st.session_state[end_key] < min_date
+    #     or st.session_state[end_key] > max_date
+    # ):
+    #     st.session_state[end_key] = max_date
 
-    saved_start = st.session_state[start_key]
-    saved_end = st.session_state[end_key]
+    # saved_start = st.session_state[start_key]
+    # saved_end = st.session_state[end_key]
 
+
+
+
+    if  st.session_state.start_date is None:
+        st.session_state.start_date = min_date    
+    if st.session_state.end_date is None:      
+        st.session_state.end_date = max_date
     # --- Date Pickers ---
     col1, col2 = st.columns(2)
     with col1:
         start_input = st.date_input(
             "Start",
-            value=saved_start.date(),
-            min_value=min_date.date(),
-            max_value=max_date.date(),
+            value = st.session_state.start_date.date(),
+            min_value = min_date.date(),
+            max_value = max_date.date(),
             label_visibility="collapsed"
         )
     with col2:
         end_input = st.date_input(
             "End",
-            value=saved_end.date(),
-            min_value=min_date.date(),
-            max_value=max_date.date(),
+            value = st.session_state.end_date.date(),
+            min_value = min_date.date(),
+            max_value = max_date.date(),
             label_visibility="collapsed"
         )
+
+
 
     # Convert inputs
     start_date = pd.to_datetime(start_input)
     end_date = pd.to_datetime(end_input)
 
     # Save updates
-    st.session_state[start_key] = start_date
-    st.session_state[end_key] = end_date
+    st.session_state.start_date = start_date
+    st.session_state.end_date = end_date
 
     # Validate range
     if start_date > end_date:
@@ -245,7 +258,7 @@ if page == "📈 Visualization":
     if filtered_data.empty:
         st.error("No data available in the selected date range.")
         st.stop()
-    elif start_date != saved_start or end_date != saved_end:
+    elif start_date != st.session_state.start_date or end_date != st.session_state.end_date:
         st.info(f"Adjusted to nearest available data: {start_date.date()} to {end_date.date()}")
 
 
@@ -289,7 +302,7 @@ elif page == "📋 Data Source & Scraping":
     )
  
     # Get cleaned data and selected product
-    data_to_plot = get_clean_data(df)[1]
+    data_to_plot = get_clean_data(df)[0]
     st.dataframe(data_to_plot)  
 
 
