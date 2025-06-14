@@ -15,3 +15,11 @@ __pycache__/
 # Ignore config
 .env
 *.sqlite3
+
+models/
+metrics/
+data/plot_data/
+
+data/plot_data/*.csv
+models/*.pkl
+metrics/*.json
