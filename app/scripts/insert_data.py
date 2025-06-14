@@ -2,6 +2,34 @@ import sqlite3
 import pandas as pd
 from pathlib import Path
 
+
+
+######## CONVERTE OS ARQUIVOS COM LIBRE OFFICE ######
+import subprocess
+def converter_com_libreoffice(pasta: str):
+    arquivos_xls = Path(pasta).glob("*.xls")
+
+    for arquivo in arquivos_xls:
+        print(f"🔄 Convertendo com LibreOffice: {arquivo.name}")
+        try:
+            subprocess.run([
+                "/Applications/LibreOffice.app/Contents/MacOS/soffice",  # Caminho completo
+                "--headless",
+                "--convert-to", "xlsx",
+                str(arquivo),
+                "--outdir", str(arquivo.parent)
+            ], check=True)
+            print(f"✅ Sucesso: {arquivo.with_suffix('.xlsx').name}")
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Falha ao converter {arquivo.name}: {e}")
+
+#Executar
+converter_com_libreoffice("app/data/")
+#############################
+
+#### precisa apagar os arqquivos .xls  ???????? e os arquivos .xlsx #####
+
+
 # Path to the data folder and database file
 data_dir = Path("app/data/")
 db_path = data_dir / "cepea.db"
@@ -55,3 +83,4 @@ conn.commit()
 conn.close()
 
 print("Data successfully inserted or updated!")
+
