@@ -4,30 +4,28 @@ from pathlib import Path
 
 
 
-######## CONVERTE OS ARQUIVOS COM LIBRE OFFICE ######
+################# CONVERT FILES WITH LIBRE OFFICE ##############
 import subprocess
-def converter_com_libreoffice(pasta: str):
-    arquivos_xls = Path(pasta).glob("*.xls")
+def converte_with_libreoffice(fold: str):
+    files_xls = Path(fold).glob("*.xls")
 
-    for arquivo in arquivos_xls:
-        print(f"🔄 Convertendo com LibreOffice: {arquivo.name}")
+    for files in files_xls:
         try:
             subprocess.run([
-                "/Applications/LibreOffice.app/Contents/MacOS/soffice",  # Caminho completo
+                "/Applications/LibreOffice.app/Contents/MacOS/soffice",  # COMPLETE PATH
                 "--headless",
                 "--convert-to", "xlsx",
-                str(arquivo),
-                "--outdir", str(arquivo.parent)
+                str(files),
+                "--outdir", str(files.parent)
             ], check=True)
-            print(f"✅ Sucesso: {arquivo.with_suffix('.xlsx').name}")
+            print(f"✅ Sucess: {files.with_suffix('.xlsx').name}")
         except subprocess.CalledProcessError as e:
-            print(f"❌ Falha ao converter {arquivo.name}: {e}")
+            print(f"❌ Fail  {files.name}: {e}")
 
-#Executar
-converter_com_libreoffice("app/data/")
-#############################
+#Execute
+converte_with_libreoffice("app/data/")
+#####################################################
 
-#### precisa apagar os arqquivos .xls  ???????? e os arquivos .xlsx #####
 
 
 # Path to the data folder and database file

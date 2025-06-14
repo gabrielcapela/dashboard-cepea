@@ -8,20 +8,20 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# --- CONFIGURAÇÕES ---
+# --- SETTINGS---
 DOWNLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "../data")
-INSUMO_ID = ["boi","arroz","cafe","dolar"]
-#SUBTIPO = ["INDICADOR DO BOI GORDO CEPEA/ESALQ", "INDICADOR DO ARROZ EM CASCA CEPEA/IRGA-RS", "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ", "Dólar"]
-ARQUIVOS_SAIDA = ["fattened_cattle.xls", "rice.xls", "coffee.xls", "dollar.xls"]
+INPUT_ID = ["boi","arroz","cafe","dolar"]
+#SUBTYPE = ["INDICADOR DO BOI GORDO CEPEA/ESALQ", "INDICADOR DO ARROZ EM CASCA CEPEA/IRGA-RS", "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ", "Dólar"]
+OUTPUT_FILES = ["fattened_cattle.xls", "rice.xls", "coffee.xls", "dollar.xls"]
 RESOLUCAO = "Diário"
 
 #
-# --- DATAS ---
-inicio = datetime.strptime("04/01/2016", "%d/%m/%Y")  # Data fixa
-fim = datetime.today()  # Data atual
+# --- DATES ---
+begin= datetime.strptime("04/01/2016", "%d/%m/%Y")  # fix date, 2016/01/04, 
+current_date = datetime.today() 
 
-data_inicio_br = inicio.strftime('%d/%m/%Y')
-data_fim_br = fim.strftime('%d/%m/%Y')
+start_date = begin.strftime('%d/%m/%Y')
+end_date = current_date.strftime('%d/%m/%Y')
 
 # --- WEBDRIVER ---
 chrome_options = Options()
@@ -37,114 +37,111 @@ wait = WebDriverWait(driver, 40)
 
 
 
-# --- LOOP PARA CADA INSUMO ---
-for i in range(len(INSUMO_ID)):
+# --- LOOP FOR EACH INPUT ---
+for i in range(len(INPUT_ID)):
 
-    # --- ACESSA O SITE ---
+    # --- ACCESS THE SITE ---
     driver.get("https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx")
     driver.maximize_window()
 
-    # --- SELECIONA PRODUTO ---
+    # --- SELECT PRODUCT ---
+    # Scrolls to the top of the input selection window
+    scroll_element = driver.find_element(By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")
+    driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
 
-    # Rola para o topo da janela seletora dos insumos
-    elemento_scroll = driver.find_element(By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")
-    driver.execute_script("arguments[0].scrollTop = 0;", elemento_scroll)
+    # --- SELECT INPUT---
+    input_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"label[for='{INPUT_ID[i]}']")))
+    # Scroll to center the button on the screen
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", input_button)
+    input_button.click()
 
-    # --- SELECIONA O INSUMO ---
-    botao_insumo = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"label[for='{INSUMO_ID[i]}']")))
-    # Dá scroll para centralizar o botão na tela
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", botao_insumo)
-    botao_insumo.click()
+    # --- SELECT SUBTYPE ---
+    subtype_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label[for='subtipo-0']")))
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", subtype_button)
+    subtype_button.click()
 
-    # --- SELECIONA SUBTIPO ---
-    botao_subtipo = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label[for='subtipo-0']")))
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", botao_subtipo)
-    botao_subtipo.click()
+    # --- SELECT RESOLUTION ---
+    resolution_button = wait.until(EC.element_to_be_clickable((By.XPATH, f"//label[text()='{RESOLUCAO}']")))
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", resolution_button)
+    resolution_button.click()
 
 
     
 
-    # --- SELECIONA RESOLUÇÃO ---
-    botao_resolucao = wait.until(EC.element_to_be_clickable((By.XPATH, f"//label[text()='{RESOLUCAO}']")))
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", botao_resolucao )
-    botao_resolucao.click()
+    # --- SELECT START DATE ("FROM") ---
+    # Click on the start date field
+    from_button = wait.until(EC.element_to_be_clickable((By.ID, "periodo-de")))
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", from_button)
+    from_button.click()
 
-    # --- SELECIONA DATA DE INÍCIO ("DE") ---
-    # Clica no campo de data inicial
-    botao_de = wait.until(EC.element_to_be_clickable((By.ID, "periodo-de")))
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", botao_de)
-    botao_de.click()
-    # Seleciona o ano
-    ano_inicio = inicio.year
-    campo_ano_de = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#periodo-de_root select.picker__select--year")))
-    campo_ano_de.click()
-    campo_ano_de.find_element(By.CSS_SELECTOR, f"option[value='{ano_inicio}']").click()
+    # Select the year
+    begin_year = begin.year
+    from_year_field = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#periodo-de_root select.picker__select--year")))
+    from_year_field.click()
+    from_year_field.find_element(By.CSS_SELECTOR, f"option[value='{begin_year}']").click()
 
-    # Seleciona o mês
-    mes_inicio = inicio.month - 1  # janeiro é 0 no picker
-    campo_mes_de = driver.find_element(By.CSS_SELECTOR, "#periodo-de_root select.picker__select--month")
-    campo_mes_de.click()
-    campo_mes_de.find_element(By.CSS_SELECTOR, f"option[value='{mes_inicio}']").click()
+     # Select the year
+    begin_month = begin.month - 1  # january is 0 in picker
+    from_month_field = driver.find_element(By.CSS_SELECTOR, "#periodo-de_root select.picker__select--month")
+    from_month_field.click()
+    from_month_field .find_element(By.CSS_SELECTOR, f"option[value='{begin_month}']").click()
 
-    # Seleciona o dia
-    xpath_dia_inicio = f"//div[@id='periodo-de_root']//div[contains(@class, 'picker__day') and @aria-label='{data_inicio_br}']"
-    wait.until(EC.element_to_be_clickable((By.XPATH, xpath_dia_inicio))).click()
+    # Select the day
+    xpath_begin_day = f"//div[@id='periodo-de_root']//div[contains(@class, 'picker__day') and @aria-label='{start_date}']"
+    wait.until(EC.element_to_be_clickable((By.XPATH, xpath_begin_day))).click()
 
 
-    # --- SELECIONA DATA DE FIM ("ATÉ") ---
-    # Clica no campo de data final
+    # --- SELECT THE CURRENT DATA ("UNTIL") ---
+    # ClicK in the current date field
     wait.until(EC.element_to_be_clickable((By.ID, "periodo-ate"))).click()
 
-    # Seleciona o ano
-    ano_fim = fim.year
-    campo_ano_ate = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#periodo-ate_root select.picker__select--year")))
-    campo_ano_ate.click()
-    campo_ano_ate.find_element(By.CSS_SELECTOR, f"option[value='{ano_fim}']").click()
+     # Select the year
+    current_year = current_date.year
+    until_year_field = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#periodo-ate_root select.picker__select--year")))
+    until_year_field.click()
+    until_year_field.find_element(By.CSS_SELECTOR, f"option[value='{current_year}']").click()
 
-    # Seleciona o mês
-    mes_fim = fim.month - 1
-    campo_mes_ate = driver.find_element(By.CSS_SELECTOR, "#periodo-ate_root select.picker__select--month")
-    campo_mes_ate.click()
-    campo_mes_ate.find_element(By.CSS_SELECTOR, f"option[value='{mes_fim}']").click()
+    # Select the month
+    current_month = current_date.month - 1
+    until_month_field = driver.find_element(By.CSS_SELECTOR, "#periodo-ate_root select.picker__select--month")
+    until_month_field.click()
+    until_month_field.find_element(By.CSS_SELECTOR, f"option[value='{current_month}']").click()
 
-    # Seleciona o dia
-    xpath_dia_fim = f"//div[@id='periodo-ate_root']//div[contains(@class, 'picker__day') and @aria-label='{data_fim_br}']"
-    wait.until(EC.element_to_be_clickable((By.XPATH, xpath_dia_fim))).click()
-
-
+    # Select the day
+    xpath_until_day = f"//div[@id='periodo-ate_root']//div[contains(@class, 'picker__day') and @aria-label='{end_date}']"
+    wait.until(EC.element_to_be_clickable((By.XPATH, xpath_until_day))).click()
 
 
 
 
-
-    # --- CLICA EM "GERAR EXCEL" ---
+    # --- CLICK IN "GERAR EXCEL" ---
     btn_excel = wait.until(EC.element_to_be_clickable((By.ID, "adicionar")))
     btn_excel.click()
 
-    # --- AGUARDA BOTÃO DE DOWNLOAD APARECER ---
+    # --- WAIT FOR THE DOWNLOAD BUTTON TO APPEAR ---
     download_link = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-btn-download-excel")))
     download_url = download_link.get_attribute("href")
 
-    # --- FAZ O DOWNLOAD DIRETAMENTE ---
-    print("⏳ Baixando arquivo...")
+    # --- DOWNLOAD DIRECTLY ---
+    print("⏳ Downloading...")
     driver.get(download_url)
     time.sleep(3)
-    print("✅ Download concluído!")
+    print("Download completed!")
 
 
 
 
-    # --- RENOMEIA O ARQUIVO BAIXADO ---
-    arquivos = os.listdir(DOWNLOAD_FOLDER)
-    arquivos.sort(key=lambda x: os.path.getmtime(os.path.join(DOWNLOAD_FOLDER, x)), reverse=True)
-    arquivo_baixado = arquivos[0]
-    caminho_antigo = os.path.join(DOWNLOAD_FOLDER, arquivo_baixado)
-    caminho_novo = os.path.join(DOWNLOAD_FOLDER, ARQUIVOS_SAIDA[i])
+    # --- RENAME THE DOWNLOADED FILE ---
+    files = os.listdir(DOWNLOAD_FOLDER)
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(DOWNLOAD_FOLDER, x)), reverse=True)
+    downloaded_file = files[0]
+    old_path = os.path.join(DOWNLOAD_FOLDER, downloaded_file)
+    new_path = os.path.join(DOWNLOAD_FOLDER, OUTPUT_FILES[i])
 
-    # Remove arquivo anterior (se existir), depois renomeia
-    if os.path.exists(caminho_novo):
-        os.remove(caminho_novo)
-    os.rename(caminho_antigo, caminho_novo)
+    # Remove previous file (if exists), then rename
+    if os.path.exists(new_path):
+        os.remove(new_path)
+    os.rename(old_path, new_path)
 
 
     
