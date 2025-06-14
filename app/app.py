@@ -116,10 +116,6 @@ st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
 
 
 
-
-
-
-
 # --- CONNECTION WITH DATABASE ---
 # Get the path to the current directory (where app.py is)
 base_dir = os.path.dirname(__file__)
@@ -140,6 +136,9 @@ conn.close()
 
 
 
+
+
+
 # Initialize session variables only once per session
 if "start_date" not in st.session_state:
     st.session_state.start_date = None
@@ -149,13 +148,12 @@ if "end_date" not in st.session_state:
 
 
 
-
-
 # Sidebar navigation
 st.sidebar.title("NAVIGATION")
 page = st.sidebar.radio("Go to", ["📈 Visualization", "📋 Data Source & Scraping", "💰 Price Forecast", "ℹ️ About"], label_visibility="collapsed")
 
 # Logic for each page
+############################################-----VISUALIZATION-----##############################################################
 if page == "📈 Visualization":
 
 
@@ -176,41 +174,19 @@ if page == "📈 Visualization":
     data_to_plot, product,  time_res = get_clean_data(df)
 
 
-    # # Unique session keys per resolution and product
-    # date_key_prefix = f"{product}_{time_res}".lower()
-    # start_key = f"start_date_{date_key_prefix}"
-    # end_key = f"end_date_{date_key_prefix}"
-
     # Minimum and maximum dates according to the database
     min_date = data_to_plot['date'].min()
     max_date = data_to_plot['date'].max()
 
-    # # Initialize keys if not present or out of bounds
-    # if (
-    #     start_key not in st.session_state
-    #     or st.session_state[start_key] < min_date
-    #     or st.session_state[start_key] > max_date
-    # ):
-    #     st.session_state[start_key] = min_date
 
-    # if (
-    #     end_key not in st.session_state
-    #     or st.session_state[end_key] < min_date
-    #     or st.session_state[end_key] > max_date
-    # ):
-    #     st.session_state[end_key] = max_date
-
-    # saved_start = st.session_state[start_key]
-    # saved_end = st.session_state[end_key]
-
-
-
-
+    # Setting the graph limits
     if  st.session_state.start_date is None:
         st.session_state.start_date = min_date    
     if st.session_state.end_date is None:      
         st.session_state.end_date = max_date
-    # --- Date Pickers ---
+    
+    
+    #  Date Pickers
     col1, col2 = st.columns(2)
     with col1:
         start_input = st.date_input(
@@ -263,7 +239,7 @@ if page == "📈 Visualization":
 
 
 
-    # CREATE THE LINE CHART
+    ################## LINE CHART ###########################
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(filtered_data['date'], filtered_data[product], marker='o')
 
@@ -283,11 +259,12 @@ if page == "📈 Visualization":
 
     # Display the plot in Streamlit
     st.pyplot(fig)
+    ####################################
 
 
 
 
-
+###############################################-----DATA SOURCE AND SCRAPING-----##########################################################
 elif page == "📋 Data Source & Scraping":
 
 
@@ -305,7 +282,7 @@ elif page == "📋 Data Source & Scraping":
     data_to_plot = get_clean_data(df)[0]
     st.dataframe(data_to_plot)  
 
-
+##################################################-----PRICE FORECAST-----##############################################################
 elif page == "💰 Price Forecast":
     st.header("Predictions of the prices")
     st.markdown("""
@@ -314,7 +291,7 @@ elif page == "💰 Price Forecast":
                 
     """)
 
-
+######################################################-----ABOUT----####################################################################
 elif page == "ℹ️ About":
     st.header("About this App")
     st.markdown("""
