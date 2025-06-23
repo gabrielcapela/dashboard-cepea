@@ -1,5 +1,5 @@
 # Use a lightweight Python image
-FROM python:3.10-slim
+FROM python:3.10
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
