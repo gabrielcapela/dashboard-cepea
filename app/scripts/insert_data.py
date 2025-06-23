@@ -23,13 +23,13 @@ def converte_with_libreoffice(fold: str):
             print(f"❌ Fail  {files.name}: {e}")
 
 #Execute
-converte_with_libreoffice("app/data/")
+converte_with_libreoffice("data/")
 #####################################################
 
 
 
 # Path to the data folder and database file
-data_dir = Path("app/data/")
+data_dir = Path("data/")
 db_path = data_dir / "cepea.db"
 
 # Connect to the SQLite database
