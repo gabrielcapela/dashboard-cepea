@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: dashboard-cepea
-    env: docker
-    plan: free
-    dockerfilePath: Dockerfile
-    autoDeploy: false
