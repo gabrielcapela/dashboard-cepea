@@ -47,7 +47,6 @@ xgb_results = {}
 
 os.makedirs("models", exist_ok=True)
 os.makedirs("metrics", exist_ok=True)
-os.makedirs("forecast_data", exist_ok=True)
 
 for name, df in prepared_dfs.items():
     print(f"\n🔁 Starting pipeline for: {name}")
