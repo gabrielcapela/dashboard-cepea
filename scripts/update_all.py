@@ -1,4 +1,3 @@
-# update_all.py
 import subprocess
 
 subprocess.run(["python", "scripts/cepea_scraper.py"])
