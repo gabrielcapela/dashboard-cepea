@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # --- SETTINGS---
-DOWNLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "../data")
+DOWNLOAD_FOLDER = "data"
 INPUT_ID = ["boi","arroz","cafe","dolar"]
 #SUBTYPE = ["INDICADOR DO BOI GORDO CEPEA/ESALQ", "INDICADOR DO ARROZ EM CASCA CEPEA/IRGA-RS", "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ", "Dólar"]
 OUTPUT_FILES = ["fattened_cattle.xls", "rice.xls", "coffee.xls", "dollar.xls"]

@@ -11,7 +11,7 @@ import joblib
 
 ############################## DATA PREPARATION ##############################
 
-conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "../data/cepea.db"))
+conn = sqlite3.connect("data/cepea.db")
 df = pd.read_sql("SELECT * FROM prices ORDER BY date", conn)
 conn.close()
 

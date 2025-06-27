@@ -27,13 +27,8 @@ converte_with_libreoffice("data/")
 #####################################################
 
 
-
-# Path to the data folder and database file
-data_dir = Path("data/")
-db_path = data_dir / "cepea.db"
-
 # Connect to the SQLite database
-conn = sqlite3.connect(db_path)
+conn = sqlite3.connect("data/cepea.db")
 cursor = conn.cursor()
 
 # Map Excel filenames to database column names
@@ -46,7 +41,7 @@ file_column_map = {
 
 # Loop through each Excel file and update the corresponding column
 for filename, column in file_column_map.items():
-    file_path = data_dir / filename
+    file_path = Path("data") / filename
 
     # Read the Excel file, skipping the first 3 rows
     df = pd.read_excel(file_path, skiprows=3)
