@@ -55,7 +55,8 @@ for i in range(len(INPUT_ID)):
 
     # --- SELECT PRODUCT ---
     # Scrolls to the top of the input selection window
-    scroll_element = driver.find_element(By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")
+    scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
+
     driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
 
     # --- SELECT INPUT---
