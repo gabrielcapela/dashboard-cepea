@@ -7,7 +7,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 
 # --- SETTINGS ---
 DOWNLOAD_FOLDER = "data"
@@ -21,8 +20,14 @@ current_date = datetime.today()
 start_date = begin.strftime('%d/%m/%Y')
 end_date = current_date.strftime('%d/%m/%Y')
 
+# --- CHROME PATHS FOR RENDER ---
+CHROME_BINARY_PATH = "/usr/bin/chromium"
+CHROMEDRIVER_PATH = "/usr/bin/chromedriver"
+
 # --- WEBDRIVER CONFIG ---
 chrome_options = Options()
+chrome_options.binary_location = CHROME_BINARY_PATH
+
 chrome_options.add_experimental_option("prefs", {
     "download.default_directory": os.path.abspath(DOWNLOAD_FOLDER),
     "download.prompt_for_download": False,
@@ -35,9 +40,10 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
 # --- INIT DRIVER ---
-service = Service(ChromeDriverManager().install())
+service = Service(executable_path=CHROMEDRIVER_PATH)
 driver = webdriver.Chrome(service=service, options=chrome_options)
 wait = WebDriverWait(driver, 40)
+
 
 # --- LOOP FOR EACH INPUT ---
 for i in range(len(INPUT_ID)):
