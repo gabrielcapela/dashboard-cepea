@@ -11,9 +11,9 @@ def run_script(script_name):
 while True:
     print("⏰ Iniciando rotina diária do CEPEA...\n")
     
-    run_script("cepea_scraper.py")
-    run_script("insert_data.py")
-    run_script("modeling.py")
-    
+    run_script("scripts/cepea_scraper.py")
+    run_script("scripts/insert_data.py")
+    run_script("scripts/modeling.py")
+
     print("\n✅ Scripts executados com sucesso! Aguardando 24h...\n")
     time.sleep(86200)  # espera 24h
