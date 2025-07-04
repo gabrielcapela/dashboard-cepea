@@ -5,31 +5,27 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager  # ✅ novo
 import tempfile
 
-
-
-
-# --- SETTINGS---
+# --- SETTINGS ---
 DOWNLOAD_FOLDER = "data"
-INPUT_ID = ["boi","arroz","cafe","dolar"]
-#SUBTYPE = ["INDICADOR DO BOI GORDO CEPEA/ESALQ", "INDICADOR DO ARROZ EM CASCA CEPEA/IRGA-RS", "INDICADOR DO CAFÉ ARÁBICA CEPEA/ESALQ", "Dólar"]
+INPUT_ID = ["boi", "arroz", "cafe", "dolar"]
 OUTPUT_FILES = ["fattened_cattle.xls", "rice.xls", "coffee.xls", "dollar.xls"]
 RESOLUCAO = "Diário"
 
-#
 # --- DATES ---
-begin= datetime.strptime("04/01/2016", "%d/%m/%Y")  # fix date, 2016/01/04, 
-current_date = datetime.today() 
-
+begin = datetime.strptime("04/01/2016", "%d/%m/%Y")  # fix date: 2016/01/04
+current_date = datetime.today()
 start_date = begin.strftime('%d/%m/%Y')
 end_date = current_date.strftime('%d/%m/%Y')
 
-# --- WEBDRIVER ---
+# --- WEBDRIVER CONFIG ---
 chrome_options = Options()
-#chrome_options.add_argument("--window-size=1920x1080")
+
 chrome_options.add_experimental_option("prefs", {
     "download.default_directory": os.path.abspath(DOWNLOAD_FOLDER),
     "download.prompt_for_download": False,
@@ -37,14 +33,15 @@ chrome_options.add_experimental_option("prefs", {
     "safebrowsing.enabled": True
 })
 
-
-### --- HEADLESS MODE ---
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
-driver = webdriver.Chrome(options=chrome_options)
+# Managed WebDriver, no user-data-dir issues
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
+# --- WAIT OBJECT ---
 wait = WebDriverWait(driver, 40)
 
 
