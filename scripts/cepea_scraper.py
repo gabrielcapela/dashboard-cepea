@@ -52,6 +52,8 @@ for i in range(len(INPUT_ID)):
     # --- ACCESS THE SITE ---
     driver.get("https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx")
     #driver.maximize_window()
+    print("URL atual:", driver.current_url)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
     # --- SELECT PRODUCT ---
     # Scrolls to the top of the input selection window
