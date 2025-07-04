@@ -1,6 +1,7 @@
-from scripts.cepea_scraper import main as run_scraper
-from scripts.insert_data import main as run_insert
-from scripts.modeling import main as run_model
+from cepea_scraper import main as run_scraper
+from insert_data import main as run_insert
+from modeling import main as run_model
+
 
 print("🛠️Starting the daily routine")
 
