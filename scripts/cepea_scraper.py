@@ -51,7 +51,7 @@ for i in range(len(INPUT_ID)):
 
     # --- ACCESS THE SITE ---
     driver.get("https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx")
-    driver.maximize_window()
+    #driver.maximize_window()
 
     # --- SELECT PRODUCT ---
     # Scrolls to the top of the input selection window
