@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+
 
 # --- SETTINGS ---
 DOWNLOAD_FOLDER = "data"
@@ -36,9 +36,13 @@ chrome_options.add_experimental_option("prefs", {
     "safebrowsing.enabled": True
 })
 
-chrome_options.add_argument("--headless")
+chrome_options = Options()
+chrome_options.add_argument("--headless=new")  # use 'new' headless mode
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--window-size=1920,1080")
+
 
 # --- INIT DRIVER ---
 service = Service(executable_path=CHROMEDRIVER_PATH)
@@ -50,25 +54,9 @@ wait = WebDriverWait(driver, 30)
 for i in range(len(INPUT_ID)):
     driver.get("https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx")
 
-    # # Wait for main scrollable input area to be present
-    # scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
-    # driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
-
-
-    
-
-    try:
-        scroll_element = wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox"))
-        )
-    except TimeoutException:
-        print("❌ Element not found. Saving screenshot and HTML...")
-        driver.save_screenshot("error_screenshot.png")
-        with open("error_page.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-        raise  # re-raise the error to keep cronjob log intact
-
-
+    # Wait for main scrollable input area to be present
+    scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
+    driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
 
 
 
