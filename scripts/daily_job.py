@@ -23,6 +23,7 @@ def run_script(script_name):
 
 # Infinite loop to run the three scripts daily
 while True:
+    print("✅ daily_job.py started") 
     print("⏰ Starting CEPEA daily routine...\n")
     
     run_script("cepea_scraper.py")
