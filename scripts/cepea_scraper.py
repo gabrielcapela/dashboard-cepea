@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 # --- SETTINGS---
 DOWNLOAD_FOLDER = "data"
@@ -57,9 +58,53 @@ for i in range(len(INPUT_ID)):
 
     # --- SELECT PRODUCT ---
     # Scrolls to the top of the input selection window
-    scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
+    # scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
+    # 
+
+
+
+
+    
+
+    try:
+        scroll_element = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox"))
+        )
+    except TimeoutException as e:
+        print("❌ Elemento não encontrado. Salvando screenshot e HTML...")
+
+        # Salva screenshot da tela renderizada
+        driver.save_screenshot("erro_cepea.png")
+
+        # Salva o HTML da página
+        with open("erro_cepea.html", "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+
+        # (Opcional) imprime a URL atual, caso tenha sido redirecionado
+        print("🔎 URL atual:", driver.current_url)
+
+        # Re-lança a exceção para o cronjob ou o log registrar
+        raise e
+    
 
     driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # --- SELECT INPUT---
     input_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"label[for='{INPUT_ID[i]}']")))
