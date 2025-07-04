@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 # --- SETTINGS ---
 DOWNLOAD_FOLDER = "data"
@@ -42,16 +43,34 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 # --- INIT DRIVER ---
 service = Service(executable_path=CHROMEDRIVER_PATH)
 driver = webdriver.Chrome(service=service, options=chrome_options)
-wait = WebDriverWait(driver, 60)
+wait = WebDriverWait(driver, 30)
 
 
 # --- LOOP FOR EACH INPUT ---
 for i in range(len(INPUT_ID)):
     driver.get("https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx")
 
-    # Wait for main scrollable input area to be present
-    scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
-    driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
+    # # Wait for main scrollable input area to be present
+    # scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
+    # driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
+
+
+    
+
+    try:
+        scroll_element = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox"))
+        )
+    except TimeoutException:
+        print("❌ Element not found. Saving screenshot and HTML...")
+        driver.save_screenshot("error_screenshot.png")
+        with open("error_page.html", "w", encoding="utf-8") as f:
+            f.write(driver.page_source)
+        raise  # re-raise the error to keep cronjob log intact
+
+
+
+
 
     # --- SELECT INPUT ---
     input_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"label[for='{INPUT_ID[i]}']")))
