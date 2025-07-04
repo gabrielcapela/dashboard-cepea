@@ -33,7 +33,7 @@ chrome_options.add_experimental_option("prefs", {
     "safebrowsing.enabled": True
 })
 driver = webdriver.Chrome(options=chrome_options)
-wait = WebDriverWait(driver, 40)
+wait = WebDriverWait(driver, 300)
 
 
 
