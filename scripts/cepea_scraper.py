@@ -42,7 +42,7 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 # --- INIT DRIVER ---
 service = Service(executable_path=CHROMEDRIVER_PATH)
 driver = webdriver.Chrome(service=service, options=chrome_options)
-wait = WebDriverWait(driver, 40)
+wait = WebDriverWait(driver, 60)
 
 
 # --- LOOP FOR EACH INPUT ---
