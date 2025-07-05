@@ -7,7 +7,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 
 # --- SETTINGS---
 DOWNLOAD_FOLDER = "data"
@@ -26,16 +25,7 @@ end_date = current_date.strftime('%d/%m/%Y')
 
 # --- WEBDRIVER ---
 chrome_options = Options()
-
-chrome_options.add_argument("--headless=new") 
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=1920,1080")
-
-
-
-
+#chrome_options.add_argument("--window-size=1920x1080")
 chrome_options.add_experimental_option("prefs", {
     "download.default_directory": os.path.abspath(DOWNLOAD_FOLDER),
     "download.prompt_for_download": False,
@@ -52,59 +42,12 @@ for i in range(len(INPUT_ID)):
 
     # --- ACCESS THE SITE ---
     driver.get("https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx")
-    #driver.maximize_window()
-    print("URL atual:", driver.current_url)
-    wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+    driver.maximize_window()
 
     # --- SELECT PRODUCT ---
     # Scrolls to the top of the input selection window
-    # scroll_element = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")))
-    # 
-
-
-
-
-    
-
-    try:
-        scroll_element = wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "imagenet-wrap-produtos-checkbox"))
-        )
-    except TimeoutException as e:
-        print("❌ Elemento não encontrado. Salvando screenshot e HTML...")
-
-        # Salva screenshot da tela renderizada
-        driver.save_screenshot("erro_cepea.png")
-
-        # Salva o HTML da página
-        with open("erro_cepea.html", "w", encoding="utf-8") as f:
-            f.write(driver.page_source)
-
-        # (Opcional) imprime a URL atual, caso tenha sido redirecionado
-        print("🔎 URL atual:", driver.current_url)
-
-        # Re-lança a exceção para o cronjob ou o log registrar
-        raise e
-    
-
+    scroll_element = driver.find_element(By.CLASS_NAME, "imagenet-wrap-produtos-checkbox")
     driver.execute_script("arguments[0].scrollTop = 0;", scroll_element)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     # --- SELECT INPUT---
     input_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"label[for='{INPUT_ID[i]}']")))
