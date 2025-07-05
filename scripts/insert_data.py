@@ -1,29 +1,32 @@
 import sqlite3
 import pandas as pd
 from pathlib import Path
+import subprocess
 
 
 def main():
     ################# CONVERT FILES WITH LIBRE OFFICE ##############
-    import subprocess
     def converte_with_libreoffice(fold: str):
         files_xls = Path(fold).glob("*.xls")
 
-        for files in files_xls:
+        for file in files_xls:
             try:
                 subprocess.run([
-                    "/Applications/LibreOffice.app/Contents/MacOS/soffice",  # COMPLETE PATH
+                    "soffice",                
                     "--headless",
                     "--convert-to", "xlsx",
-                    str(files),
-                    "--outdir", str(files.parent)
+                    str(file),
+                    "--outdir", str(file.parent)
                 ], check=True)
-                print(f"✅ Sucess: {files.with_suffix('.xlsx').name}")
+                print(f"✅ Success: {file.with_suffix('.xlsx').name}")
             except subprocess.CalledProcessError as e:
-                print(f"❌ Fail  {files.name}: {e}")
+                print(f"❌ Conversion failed for {file.name}: {e}")
+            except FileNotFoundError:
+                print("❌ LibreOffice (soffice) not found in PATH. Make sure it is installed in the environment.")
 
-    #Execute
+    # Execute
     converte_with_libreoffice("data/")
+
     #####################################################
 
 

@@ -18,13 +18,6 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Manually install ChromeDriver version 138 (compatible with Chromium on Render)
-RUN wget https://storage.googleapis.com/chrome-for-testing-public/138.0.7204.92/linux64/chromedriver-linux64.zip && \
-    unzip chromedriver-linux64.zip && \
-    mv chromedriver-linux64/chromedriver /usr/bin/chromedriver && \
-    chmod +x /usr/bin/chromedriver && \
-    rm -rf chromedriver-linux64.zip chromedriver-linux64
-
 # Ensure Chromium is in the PATH
 ENV PATH="/usr/lib/chromium/:${PATH}"
 ENV DISPLAY=:99
@@ -36,8 +29,8 @@ WORKDIR /app
 COPY . .
 
 # Upgrade pip and install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy Streamlit configuration folder
 COPY .streamlit /app/.streamlit
