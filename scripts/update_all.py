@@ -1,4 +1,4 @@
-from cepea_scraper import main as run_scraper
+from cepea_downloader import main as run_scraper
 from insert_data import main as run_insert
 from modeling import main as run_model
 
