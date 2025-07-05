@@ -215,37 +215,6 @@ By integrating these technologies, this project not only solves a practical prob
     """, unsafe_allow_html=True)
 
 
-
-
-################DEBUG##############
-import os
-
-st.title("📄 Visualização de Erros do Scraper CEPEA")
-
-# HTML do erro
-if os.path.exists("erro_cepea.html"):
-    with open("erro_cepea.html", "r", encoding="utf-8") as f:
-        html_content = f.read()
-    st.download_button("⬇️ Baixar HTML do erro", html_content, "erro_cepea.html", mime="text/html")
-
-# Screenshot do erro
-if os.path.exists("erro_cepea.png"):
-    with open("erro_cepea.png", "rb") as f:
-        st.download_button("🖼️ Baixar Screenshot", f, "erro_cepea.png", mime="image/png")
-
-#####################
-
-
-
-
-
-
-
-
-
-
-
-
 ############################################-----VISUALIZATION-----##############################################################
 elif page == "📈 Visualization":
 
