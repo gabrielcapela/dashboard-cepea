@@ -1,5 +1,5 @@
 {
-    "mape_val_initial": 0.0201,
-    "mape_val_tuned": 0.0189,
-    "mape_test": 0.2345
+    "mape_val_initial": 0.0419,
+    "mape_val_tuned": 0.0439,
+    "mape_test": 0.246
 }
