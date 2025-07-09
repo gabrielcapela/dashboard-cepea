@@ -16,8 +16,8 @@ def main():
         for file in files_xls:
             try:
                 subprocess.run([
-                    #"soffice",
-                    "/Applications/LibreOffice.app/Contents/MacOS/soffice",  
+                    "soffice",
+                    #"/Applications/LibreOffice.app/Contents/MacOS/soffice",  
                     "--headless",
                     "--convert-to", "xlsx",
                     str(file),
