@@ -59,8 +59,8 @@ def main():
             continue
 
         # Read the Excel file (skip metadata rows)
-        #df = pd.read_excel(file_path, skiprows=3465)
-        df = pd.read_excel(file_path, skiprows=3)
+        df = pd.read_excel(file_path, skiprows=3465)
+        #df = pd.read_excel(file_path, skiprows=3)
         df = df.iloc[:, :2]
         df.columns = ['date', 'price']
         df['date'] = pd.to_datetime(df['date'], dayfirst=True).dt.strftime('%Y-%m-%d')
