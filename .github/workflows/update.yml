@@ -1,0 +1,28 @@
+name: Daily Update
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # Executa todos os dias às 07:00 BRT (10:00 UTC)
+  workflow_dispatch:      # Permite executar manualmente
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t cepea-update .
+
+      - name: Run update_all script inside Docker
+        run: docker run --rm cepea-update python scripts/update_all.py
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
