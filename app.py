@@ -6,6 +6,8 @@ from scripts.utils import get_clean_data
 from scripts.utils import plot_forecast
 import os
 import base64
+import psycopg2
+from dotenv import load_dotenv
 
 
 # --- PAGE SETUP ---
@@ -117,22 +119,24 @@ st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
 
 
 
+# Load environment variables (recommended)
+load_dotenv()
 
-# --- CONNECTION WITH DATABASE ---
-# Get the path to the current directory (where app.py is)
-base_dir = os.path.dirname(__file__)
+# Connect to PostgreSQL using environment variables
+conn = psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    dbname=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    port=os.getenv("DB_PORT", 5432)
+)
 
-# Build the full path to the database
-db_path = os.path.join(base_dir, "data", "cepea.db")
-
-# Connect to the database
-conn = sqlite3.connect(db_path)
-
-# Load all records from the 'prices' table
+# Load the 'prices' table
 df = pd.read_sql("SELECT * FROM prices ORDER BY date", conn)
 
-# Close the database connection
+# Close the connection
 conn.close()
+
 
 
 
