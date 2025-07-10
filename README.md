@@ -15,7 +15,9 @@ Automated data collection directly from the CEPEA website.
 Conversion and insertion into a PostgreSQL database.
 Predictive modeling with XGBoost.
 Historical data visualization and forecasting via Streamlit.
-Fully automated daily updates with GitHub Actions. 🚀 Technologies Used
+Fully automated daily updates with GitHub Actions. 
+
+### Technologies Used:
 
 * Python 3.10
 * Streamlit – Interactive interface
