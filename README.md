@@ -1,5 +1,6 @@
 # 🌾 CEPEA Dashboard - Agricultural Input Price Forecast
-A dashboard fed with data from CEPEA (Center for Advanced Studies in Applied Economics) on the prices of the main inputs for Brazilian agribusiness. It also includes predictions made by Machine Learning.
+
+Interactive dashboard that automatically collects, stores, and forecasts agricultural input prices (live cattle, rice, coffee, and the dollar) based on data provided by CEPEA (Center for Advanced Studies in Applied Economics).
 
 ## 🛠️ How to Use
 
@@ -7,10 +8,6 @@ A dashboard fed with data from CEPEA (Center for Advanced Studies in Applied Eco
 https://dashboard-cepea-app.onrender.com
 
 (ℹ️ It may take a while to load, as I'm using Render's free plan.)
-
-
-
-Interactive dashboard that automatically collects, stores, and forecasts agricultural input prices (live cattle, rice, coffee, and the dollar) based on data provided by CEPEA (Center for Advanced Studies in Applied Economics).
 
 ## 📊 The system performs:
 
@@ -31,3 +28,4 @@ Fully automated daily updates with GitHub Actions. 🚀 Technologies Used
 * Docker – Application containerization
 * Render.com – Webapp + database deployment
 * GitHub Actions – Daily update automation
+
