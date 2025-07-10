@@ -59,7 +59,7 @@ def main():
             continue
 
         # Read the Excel file (skip metadata rows)
-        df = pd.read_excel(file_path, skiprows=3465)
+        df = pd.read_excel(file_path, skiprows=3000)
         #df = pd.read_excel(file_path, skiprows=3)
         df = df.iloc[:, :2]
         df.columns = ['date', 'price']
