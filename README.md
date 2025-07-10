@@ -1,6 +1,6 @@
 # 🌾 CEPEA Dashboard - Agricultural Input Price Forecast
 
-Interactive dashboard that automatically collects, stores, and forecasts agricultural input prices (live cattle, rice, coffee, and the dollar) based on data provided by CEPEA (Center for Advanced Studies in Applied Economics).
+Interactive dashboard that automatically collects, stores, and forecasts agricultural input prices (fattened cattle, rice, and coffee) based on data provided by CEPEA (Center for Advanced Studies in Applied Economics).
 
 ## 🛠️ How to Use
 
