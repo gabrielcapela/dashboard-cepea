@@ -170,7 +170,7 @@ In a sector as strategic as agriculture, **data science** becomes a powerful all
 
 #### Project stages:
 
-- **Automated Web Scraping**: performs daily data collection directly from the [**CEPEA (Center for Advanced Studies on Applied Economics)**](https://www.cepea.org.br/br) website, even without API support, using Selenium to interact with the website interface and obtain updated spreadsheets with input prices.
+- **Automated Web Scraping**: performs daily data collection directly from the [**CEPEA (Center for Advanced Studies on Applied Economics)**](https://www.cepea.org.br/br) website, even without API support, using Requests(Python)sto interact with the website interface and obtain updated spreadsheets with input prices.
 
 - **Relational Database**: the collected data is organized and stored in a SQLite database, allowing efficient queries and ensuring integrity and historical traceability.
 - **Interactive Data Visualization**: intuitive dashboards are made available with Streamlit, allowing the user to explore time series, identify trends and monitor price variations in a clear and accessible way.
