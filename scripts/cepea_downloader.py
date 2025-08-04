@@ -8,7 +8,7 @@ def download_cepea_excel(table_id, filename, start_date, end_date, resolution=1)
     Sends a request to CEPEA and downloads the generated Excel file based on the returned JSON response.
     """
     headers = {
-        "User-Agent": "Mozilla/5.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
         "Referer": "https://www.cepea.org.br/br/consultas-ao-banco-de-dados-do-site.aspx",
     }
 
@@ -21,10 +21,13 @@ def download_cepea_excel(table_id, filename, start_date, end_date, resolution=1)
     }
 
     print("📨 Requesting file generation...")
-    response = requests.get(url, params=params, headers=headers)
+    response = requests.get(url, params=params, headers=headers, timeout=10)
+
     if response.status_code != 200:
-        print("❌ Failed to contact CEPEA.")
+        print(f"❌ Status code: {response.status_code}")
+        print(f"❌ Response text: {response.text[:500]}")
         return
+
 
     try:
         data = response.json()
