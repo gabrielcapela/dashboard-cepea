@@ -50,7 +50,7 @@ def main():
     # --- Define CEPEA table IDs and output filenames --
     table_ids = [2, 91, 23, 'dolar']  # Example IDs for: cattle, rice, coffee, dollar
     output_files = ["fattened_cattle.xls", "rice.xls", "coffee.xls", "dollar.xls"]
-    start_date = "04/01/2016"
+    start_date = "04/07/2022"
     end_date = datetime.today().strftime("%d/%m/%Y")
 
     # --- Download loop ---
