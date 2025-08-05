@@ -16,8 +16,8 @@ def main():
         for file in files_xls:
             try:
                 subprocess.run([
-                    "soffice",
-                    #"/Applications/LibreOffice.app/Contents/MacOS/soffice",  
+                    #"soffice",   # Uncomment this line if you have LibreOffice installed in your PATH
+                        "/Applications/LibreOffice.app/Contents/MacOS/soffice",  # Adjust path to my local use
                     "--headless",
                     "--convert-to", "xlsx",
                     str(file),
@@ -59,8 +59,8 @@ def main():
             continue
 
         # Read the Excel file (skip metadata rows)
-        df = pd.read_excel(file_path, skiprows=2000)
-        #df = pd.read_excel(file_path, skiprows=3)
+       # df = pd.read_excel(file_path, skiprows=2000)
+        df = pd.read_excel(file_path, skiprows=3)
         df = df.iloc[:, :2]
         df.columns = ['date', 'price']
         df['date'] = pd.to_datetime(df['date'], dayfirst=True).dt.strftime('%Y-%m-%d')
