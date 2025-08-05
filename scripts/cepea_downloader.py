@@ -2,6 +2,7 @@ import requests
 import os
 from datetime import datetime
 import time
+import cloudscraper 
 
 def download_cepea_excel(table_id, filename, start_date, end_date, resolution=1):
     """
@@ -21,7 +22,9 @@ def download_cepea_excel(table_id, filename, start_date, end_date, resolution=1)
     }
 
     print("📨 Requesting file generation...")
-    response = requests.get(url, params=params, headers=headers, timeout=10)
+    #response = requests.get(url, params=params, headers=headers, timeout=10)
+    scraper = cloudscraper.create_scraper()                       #05AGO
+    response = scraper.get(url, params=params, headers=headers)  #05AGO
 
     if response.status_code != 200:
         print(f"❌ Status code: {response.status_code}")
@@ -53,7 +56,7 @@ def main():
     # --- Define CEPEA table IDs and output filenames --
     table_ids = [2, 91, 23, 'dolar']  # Example IDs for: cattle, rice, coffee, dollar
     output_files = ["fattened_cattle.xls", "rice.xls", "coffee.xls", "dollar.xls"]
-    start_date = "04/07/2022"
+    start_date = "24/07/2025"
     end_date = datetime.today().strftime("%d/%m/%Y")
 
     # --- Download loop ---
