@@ -12,6 +12,9 @@ def main():
     # ---------- Convert XLS to XLSX using LibreOffice ----------
     def convert_with_libreoffice(folder: str):
         files_xls = Path(folder).glob("*.xls")
+        
+        print("📁 Current working directory:", os.getcwd())
+        print("📂 Files in ./data/:", list(Path("data").glob("*")))
 
         for file in files_xls:
             try:
@@ -59,10 +62,6 @@ def main():
             continue
 
         # Read the Excel file (skip metadata rows)
-       # df = pd.read_excel(file_path, skiprows=2000)
-        #df = pd.read_excel(file_path, skiprows=3)
-        df = pd.read_excel(file_path)
-        print(df.head(10))  # para depuração
         df = pd.read_excel(file_path, skiprows=3)
 
         df = df.iloc[:, :2]
