@@ -23,7 +23,7 @@ ENV PATH="/usr/lib/chromium/:${PATH}"
 ENV DISPLAY=:99
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /
 
 # Copy all project files into the container
 COPY . .
